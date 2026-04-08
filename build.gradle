@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '4.0.5'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.openapi.generator' version '7.4.0'
+    id 'com.diffplug.spotless' version '8.4.0'
 }
 
 group = 'be.community'
@@ -28,9 +29,11 @@ dependencies {
     implementation 'org.openapitools:jackson-databind-nullable:0.2.8'
     // Swagger interface for OpenApi
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
+    // Spotless
+    implementation 'com.diffplug.spotless:spotless-plugin-gradle:8.4.0'
     // SSS Utils is reuse all object
-    implementation 'be.fgov.economie.sss:sss-utils:1.0.0-20251103.090114-5'
-    implementation 'be.fgov.economie.sss:messaging-common:0.0.1-SNAPSHOT-27'
+//    implementation 'be.fgov.economie.sss:sss-utils:1.0.0-20251103.090114-5'
+//    implementation 'be.fgov.economie.sss:messaging-common:0.0.1-SNAPSHOT-27'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
@@ -56,4 +59,25 @@ openApiGenerate {
     ]
 
     skipValidateSpec = true
+}
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integrationTest/java')
+        resources.srcDir file('src/integrationTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
