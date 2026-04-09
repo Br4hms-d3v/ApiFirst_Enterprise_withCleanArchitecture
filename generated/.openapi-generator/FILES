@@ -1,0 +1,13 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+src/main/java/org/openapitools/api/ApiUtil.java
+src/main/java/org/openapitools/api/EmployeeApi.java
+src/main/java/org/openapitools/model/Address.java
+src/main/java/org/openapitools/model/CreateEmployeeRequest.java
+src/main/java/org/openapitools/model/EmployeeResponse.java
+src/main/java/org/openapitools/model/Employees.java
+src/main/java/org/openapitools/model/InputValidationIssue.java
+src/main/java/org/openapitools/model/InputValidationProblem.java
+src/main/java/org/openapitools/model/Problem.java
+src/main/java/org/openapitools/model/UpdateEmployeeRequest.java
