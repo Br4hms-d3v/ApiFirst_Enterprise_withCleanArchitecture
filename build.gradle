@@ -31,9 +31,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
     // Spotless
     implementation 'com.diffplug.spotless:spotless-plugin-gradle:8.4.0'
-    // SSS Utils is reuse all object
-//    implementation 'be.fgov.economie.sss:sss-utils:1.0.0-20251103.090114-5'
-//    implementation 'be.fgov.economie.sss:messaging-common:0.0.1-SNAPSHOT-27'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
