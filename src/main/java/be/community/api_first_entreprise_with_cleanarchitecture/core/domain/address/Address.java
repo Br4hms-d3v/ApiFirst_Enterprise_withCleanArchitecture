@@ -10,21 +10,26 @@ public class Address {
   /** The unique id of the address. */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "address_id")
   private Long id;
 
   /** The street name. */
+  @Column(name = "street")
   private String street;
 
   /** The postcode of the city. */
+  @Column(name = "postcode")
   private Integer zipCode;
 
   /** The city name. */
+  @Column(name = "city")
   private String city;
 
   /** The employee who owns this address. */
   @OneToOne(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
   private Employee employee;
 
+  // Getter and Setter
   public Long getId() {
     return id;
   }

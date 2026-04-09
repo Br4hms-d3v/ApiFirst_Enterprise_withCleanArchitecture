@@ -9,22 +9,27 @@ public class Employee {
   /** The unique id of the employee. */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "employee_id")
   private Long id;
 
   /** The last name of the employee. */
+  @Column(name = "name")
   private String name;
 
   /** The first name of the employee. */
+  @Column(name = "first_name")
   private String firstName;
 
   /** The email of the employee. It must be unique. */
-  @Column(unique = true)
+  @Column(name = "email", unique = true)
   private String email;
 
   /** The service (department) of the employee. */
+  @Column(name = "service")
   private String service;
 
   /** The floor where the employee works. */
+  @Column(name = "floor_number")
   private Integer floor;
 
   /** The address of the employee. */
@@ -32,6 +37,7 @@ public class Employee {
   @JoinColumn(name = "address_id", unique = true)
   private Address address;
 
+  // Getter and Setter
   public Long getId() {
     return id;
   }

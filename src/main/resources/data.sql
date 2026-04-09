@@ -1,11 +1,11 @@
-INSERT INTO address(street, zipcode, city)
+INSERT INTO address(street, postcode, city)
 VALUES ('Rue Italie', 1000, 'Bruxelles'),
        ('Rue Espagne', 1060, 'Saint-Gilles'),
        ('Grand Place', 1000, 'Bruxelles'),
        ('Boulevard de l''Atomium', 1020, 'Bruxelles'),
        ('Rue Washington', 1050, 'Ixelles');
 
-INSERT INTO employee(name, firstname, service, floor, address_id)
+INSERT INTO employee(name, first_name, service, floor_number, address_id)
 VALUES ('Coq', 'Fernand', 'Helpdesk', 1, 1),
        ('Dupont', 'Julien', 'Reception', 0, 2),
        ('Habiba', 'Selma', 'RH', 6, 4),
