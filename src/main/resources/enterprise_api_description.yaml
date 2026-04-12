@@ -11,8 +11,7 @@ info:
     - search by name
   version: 1.0-SNAPSHOT
 servers:
-  - url: https://testenvironment.org/api/v1
-  - url: https://prodenvironment.org/api/v1
+  - url: http://localhost:8080/
 tags:
   - name: employee
     description: Employee management
