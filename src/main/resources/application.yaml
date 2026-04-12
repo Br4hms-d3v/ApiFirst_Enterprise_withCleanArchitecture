@@ -3,7 +3,7 @@ spring:
     name: Api_First_Entreprise_With_CleanArchitecture
 
   datasource:
-    url: jdbc:h2:mem:employee;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:employee;
     username: employee
     password: employee
     driver-class-name: org.h2.Driver
