@@ -1,80 +1,175 @@
+// =============================================
+//                  PLUGINS
+// =============================================
+//These plugins add features to Gradle
+
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.5'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.openapi.generator' version '7.4.0'
-    id 'com.diffplug.spotless' version '8.4.0'
+    id 'java' // Java support (compile, build, test)
+    id 'org.springframework.boot' version '4.0.5' // Spring Boot framework
+    id 'io.spring.dependency-management' version '1.1.7' // Manage library versions
+    id 'org.openapi.generator' version '7.4.0' // Generate API code automatically
+    id 'com.diffplug.spotless' version '8.4.0' // Format Java code automatically
 }
 
-group = 'be.community'
-version = '0.0.1-SNAPSHOT'
-description = 'Api_First_Entreprise_With_CleanArchitecture'
+// =============================================
+//                 PROJECT INFO
+// =============================================
+// Basic project information
+
+group = 'be.community' // Company or organization name
+version = '0.0.1-SNAPSHOT' // Project version (development version)
+description = 'Api_First_Entreprise_With_CleanArchitecture' // Project description
+
+// =============================================
+//              JAVA CONFIGURATION
+// =============================================
+// Define Java version used in project
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(25) // use Java 25
     }
 }
 
+// =============================================
+//                 REPOSITORIES
+// =============================================
+// Where Gradle downloads libraries
+
 repositories {
-    mavenCentral()
+    mavenCentral() //Official Java library repository
 }
 
+// =============================================
+//                 DEPENDENCIES
+// =============================================
+// External libraries used in the project
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-h2console'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-h2console' // H2 database console
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Database + JPA
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc' // REST API support
     implementation 'org.hibernate.validator:hibernate-validator:9.0.1.Final'
+    // Validation library (for checking input data)
     // Management of OpenAPI nullable fields
     implementation 'org.openapitools:jackson-databind-nullable:0.2.8'
     // Swagger interface for OpenApi
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
-    // Spotless
+    // Spotless tool to formatting code
     implementation 'com.diffplug.spotless:spotless-plugin-gradle:8.4.0'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.h2database:h2'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // Development tools (auto restart)
+    runtimeOnly 'com.h2database:h2' // H2 database in memory
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test' // Test dependence
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test' //  Test dependence
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+// =============================================
+//             TEST CONFIGURATION
+// =============================================
+// Use JUnit platform for tests
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-openApiGenerate {
-    generatorName = "spring"
-    inputSpec = "$projectDir/src/main/resources/enterprise_api_description.yaml"
-    outputDir = "$projectDir/generated"
+// =============================================
+//              OPENAPI GENERATION
+// =============================================
+// This generates Java code from an OpenAPI YAML file
 
-    library = "spring-boot"
+openApiGenerate {
+    generatorName = "spring" // Use Spring
+    inputSpec = "$rootDir/src/main/resources/enterprise_api_description.yaml" // Path of OpenAPI file
+    outputDir = "$buildDir/generated" // WHERE generated code is saved
+
+    library = "spring-boot" //Use Spring Boot style code
 
     configOptions = [
-            openApiNullable: "false",
-            interfaceOnly  : "true",
-            useSpringBoot3 : "true"
+            openApiNullable: "false", // Do not allow nullable fields
+            interfaceOnly  : "true", // Generate only interfaces
+            useSpringBoot3 : "true" // Use Spring Boot 3 style code
     ]
 
-    skipValidateSpec = true
+    skipValidateSpec = true // Skip validation of OpenAPI file
 }
+
+// =============================================
+//      SPOTLESS ( CODE FORMATTER )
+// =============================================
+// This tool formats Java code automatically
+
 spotless {
     java {
         googleJavaFormat()
+
+        // Do not format generated code (important) => because it is generated automatically
+        targetExclude(
+                "$buildDir/generated/**/*.java" //Use Google style for Java formatting
+        )
+
+        // Only format real source code
+        target(
+                "src/main/java/**/*.java",
+                "src/test/java/**/*.java"
+        )
     }
 }
+
+// =============================================
+//                SOURCE SETS
+// =============================================
+// Define where Java files are located
 
 sourceSets {
     integrationTest {
         java.srcDir file('src/integrationTest/java')
         resources.srcDir file('src/integrationTest/resources')
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
+        runtimeClasspath += output + compileClasspath //Add main code to integration tests
+    }
+
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java" // Add generated OpenAPI code to project
+        }
     }
 }
 
+// =============================================
+//             INTEGRATION TEST TASK
+// =============================================
+// Run integration tests separately
+
 task integrationTest(type: Test) {
-    description = 'Runs the integration tests.'
-    group = 'verification'
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
+    description = 'Runs the integration tests.' // What this task does
+    group = 'verification' // Category of task
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs // Where test classes are
+    classpath = sourceSets.integrationTest.runtimeClasspath // Runtime classpath for test
+}
+// =============================================
+//              TASK DEPENDENCIES
+// =============================================
+
+// Generate OpenAPI code before compiling Java
+tasks.compileJava.dependsOn tasks.openApiGenerate
+
+// OpenAPI must run after clean
+tasks.named("openApiGenerate") {
+    mustRunAfter tasks.clean
+}
+
+//Ensure correct order for Spotless
+tasks.named("spotlessJava") {
+    mustRunAfter tasks.openApiGenerate
+}
+
+// Ensure OpenAPI runs before Spotless check
+tasks.named("spotlessJavaCheck") {
+    dependsOn tasks.openApiGenerate
+}
+
+// Ensure OpenAPI runs before applying formatting
+tasks.named("spotlessApply") {
+    dependsOn tasks.openApiGenerate
 }
