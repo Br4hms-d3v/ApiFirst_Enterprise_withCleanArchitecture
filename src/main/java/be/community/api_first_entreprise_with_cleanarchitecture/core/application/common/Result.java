@@ -1,5 +1,7 @@
 package be.community.api_first_entreprise_with_cleanarchitecture.core.application.common;
 
+import java.util.function.Function;
+
 /**
  * This class represents a result. It can be success or failure.
  *
@@ -25,6 +27,15 @@ public class Result<E, T> {
   // Create a failure result.
   public static <E, T> Result<E, T> failure(E error) {
     return new Result<>(error, null, false);
+  }
+
+  // Give only a failure or a succes
+  public <R> R fold(Function<E, R> onfailure, Function<T, R> onSuccess) {
+    if (success) {
+      return onSuccess.apply(value);
+    } else {
+      return onfailure.apply(error);
+    }
   }
 
   // Check if result is success
