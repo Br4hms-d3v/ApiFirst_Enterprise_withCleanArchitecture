@@ -24,7 +24,11 @@ public sealed interface EmployeeError
     }
   }
 
-  /** This error is used when employee creation fails. */
+  /**
+   * This error is used when employee creation fails.
+   *
+   * @param message
+   */
   record EmployeeCreationFailed(String message) implements EmployeeError {
     /**
      * Get the error message.
