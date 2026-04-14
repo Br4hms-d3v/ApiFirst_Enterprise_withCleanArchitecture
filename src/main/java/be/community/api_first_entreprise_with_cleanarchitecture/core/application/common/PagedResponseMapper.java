@@ -11,9 +11,10 @@ import org.springframework.stereotype.Component;
 public class PagedResponseMapper {
 
   /** Convert a Page of entities to a PagedResponse of DTO. */
-  public <T, R> PagedResponseDto<R> toPagedResponseDto(Page<T> page, Function<T, R> mapper) {
+  public static <E, D> PagedResponseDto<D> toPagedResponseDto(
+      Page<E> page, Function<List<E>, List<D>> mapper) {
     // Transform data
-    List<R> content = page.getContent().stream().map(mapper).toList();
+    List<D> content = mapper.apply(page.getContent());
 
     return new PagedResponseDto<>(
         content,
