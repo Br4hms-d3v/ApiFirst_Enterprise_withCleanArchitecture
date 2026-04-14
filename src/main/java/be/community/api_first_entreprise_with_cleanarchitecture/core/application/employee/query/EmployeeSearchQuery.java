@@ -6,6 +6,5 @@ package be.community.api_first_entreprise_with_cleanarchitecture.core.applicatio
  * @param name the name of employee
  */
 public record EmployeeSearchQuery(
-        // The name
-        String name) {
-}
+    // The name
+    String name) {}

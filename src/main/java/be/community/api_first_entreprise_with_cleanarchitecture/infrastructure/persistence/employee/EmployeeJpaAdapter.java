@@ -2,7 +2,6 @@ package be.community.api_first_entreprise_with_cleanarchitecture.infrastructure.
 
 import be.community.api_first_entreprise_with_cleanarchitecture.core.domain.employee.Employee;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.domain.employee.EmployeeRepository;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
