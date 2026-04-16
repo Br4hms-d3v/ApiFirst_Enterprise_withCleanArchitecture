@@ -13,8 +13,7 @@ public class AddressMapper {
       return null;
     }
 
-    return new AddressDto(
-        address.getId(), address.getStreet(), address.getZipCode(), address.getCity());
+    return new AddressDto(address.getStreet(), address.getZipCode(), address.getCity());
   }
 
   /** Convert AddressDto to Address. */
@@ -24,7 +23,6 @@ public class AddressMapper {
     }
 
     Address address = new Address();
-    address.setId(dto.id());
     address.setStreet(dto.street());
     address.setZipCcode(dto.zipCode());
     address.setCity(dto.city());
