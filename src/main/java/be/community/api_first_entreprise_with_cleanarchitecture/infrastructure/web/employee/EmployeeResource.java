@@ -1,7 +1,10 @@
 package be.community.api_first_entreprise_with_cleanarchitecture.infrastructure.web.employee;
 
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.address.dto.AddressDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.common.Result;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.common.dto.PagedResponseDto;
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.CreateEmployeeCommand;
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.handler.CreateEmployeeCommandHandler;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.dto.EmployeeDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.dto.EmployeeListDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.query.EmployeeListQuery;
@@ -14,6 +17,7 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.domain.empl
 import java.util.List;
 import java.util.Objects;
 import org.openapitools.api.EmployeeApi;
+import org.openapitools.model.CreateEmployeeRequest;
 import org.openapitools.model.EmployeeResponse;
 import org.openapitools.model.Employees;
 import org.springframework.http.HttpStatus;
@@ -28,14 +32,20 @@ public class EmployeeResource implements EmployeeApi {
   private final EmployeeListQueryHandler employeeListQueryHandler;
   private final EmployeeSearchQueryHandler employeeSearchQueryHandler;
 
+  private final CreateEmployeeCommandHandler createEmployeeCommandHandler;
+
   public EmployeeResource(
       EmployeeQueryHandler employeeQueryHandler,
       EmployeeListQueryHandler employeeListQueryHandler,
-      EmployeeSearchQueryHandler employeeSearchQueryHandler) {
+      EmployeeSearchQueryHandler employeeSearchQueryHandler,
+      CreateEmployeeCommandHandler createEmployeeCommandHandler) {
     this.employeeQueryHandler = employeeQueryHandler;
     this.employeeListQueryHandler = employeeListQueryHandler;
     this.employeeSearchQueryHandler = employeeSearchQueryHandler;
+    this.createEmployeeCommandHandler = createEmployeeCommandHandler;
   }
+
+  ///////////////////////// Query /////////////////////////
 
   /**
    * Get employe by ID
@@ -100,18 +110,53 @@ public class EmployeeResource implements EmployeeApi {
         });
   }
 
+  /// ////////////////////// Command /////////////////////////
+
+  public ResponseEntity<Void> createEmployee(CreateEmployeeRequest createEmployeeRequest) {
+    AddressDto addressDto =
+        new AddressDto(
+            createEmployeeRequest.getAddress().getStreet(),
+            createEmployeeRequest.getAddress().getZipcode(),
+            createEmployeeRequest.getAddress().getCity());
+
+    CreateEmployeeCommand command =
+        new CreateEmployeeCommand(
+            createEmployeeRequest.getName(),
+            createEmployeeRequest.getFirstname(),
+            createEmployeeRequest.getEmail(),
+            createEmployeeRequest.getService(),
+            createEmployeeRequest.getFloor(),
+            addressDto);
+
+    System.out.println("firstname: " + createEmployeeRequest.getFirstname());
+    var result = createEmployeeCommandHandler.handle(command);
+
+    return result.fold(
+        this::handleEmployeeError, success -> new ResponseEntity<>(HttpStatus.CREATED));
+  }
+
   // This is a design patter for Error Employee
   private <T> ResponseEntity<T> handleEmployeeError(EmployeeError error) {
     switch (Objects.requireNonNull(error)) {
       case EmployeeError.EmployeeNotFound(var message) ->
           throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+      case EmployeeError.EmployeeNameIsMissing(var message) ->
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+      case EmployeeError.EmployeeCreationFailed(var message) ->
+          throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, message);
       case EmployeeError.EmployeeInvalidFailed(var message) ->
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
       case EmployeeError.EmployeeListIsEmpty(var message) ->
           throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-      default ->
-          throw new ResponseStatusException(
-              HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+      case EmployeeError.EmployeeInvalidLevel(var message) ->
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+      case EmployeeError.EmployeeEmailNotValid(var message) ->
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+      default -> {
+        System.out.println("UNHANDLED ERROR: " + error.getClass());
+        throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+      }
     }
   }
 }
