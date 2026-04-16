@@ -10,7 +10,8 @@ public sealed interface EmployeeError
         EmployeeError.EmployeeInvalidFailed,
         EmployeeError.EmployeeNameIsMissing,
         EmployeeError.EmployeeListIsEmpty,
-        EmployeeError.EmployeeEmailNotValid {
+        EmployeeError.EmployeeEmailNotValid,
+        EmployeeError.EmployeeInvalidLevel {
 
   /** This error is used when an employee is not found. */
   record EmployeeNotFound(String message) implements EmployeeError {
@@ -84,6 +85,19 @@ public sealed interface EmployeeError
      * @return a message
      */
     public String getMessage() {
+      return message;
+    }
+  }
+
+  /** This error is used when we input the wrong floor */
+  record EmployeeInvalidLevel(String message) implements EmployeeError {
+    /**
+     * Get the error message
+     *
+     * @return a message
+     */
+    @Override
+    public String message() {
       return message;
     }
   }
