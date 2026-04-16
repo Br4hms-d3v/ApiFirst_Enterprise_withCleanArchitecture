@@ -5,7 +5,6 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.application
 /**
  * This command is used to create an employee
  *
- * @param id the identifier
  * @param name the name of employee
  * @param firstName the first name of employee
  * @param email the email of employee
@@ -14,9 +13,6 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.application
  * @param address the address where he lives
  */
 public record CreateEmployeeCommand(
-    // The id of the employee.
-    Long id,
-
     // The last name.
     String name,
 

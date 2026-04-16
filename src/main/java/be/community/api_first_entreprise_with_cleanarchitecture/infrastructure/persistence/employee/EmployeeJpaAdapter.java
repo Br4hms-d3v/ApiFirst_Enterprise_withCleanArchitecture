@@ -31,4 +31,14 @@ public class EmployeeJpaAdapter implements EmployeeRepository {
   public List<Employee> searchByName(String name) {
     return jpaEmployeeRepository.searchByName(name);
   }
+
+  @Override
+  public Boolean emailExists(String email) {
+    return jpaEmployeeRepository.existsByEmail(email);
+  }
+
+  @Override
+  public void save(Employee employee) {
+    jpaEmployeeRepository.save(employee);
+  }
 }

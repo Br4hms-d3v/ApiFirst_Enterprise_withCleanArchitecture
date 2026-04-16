@@ -10,4 +10,8 @@ public interface EmployeeRepository {
   Page<Employee> findAll(int pageNumber, int pageSize);
 
   List<Employee> searchByName(String name);
+
+  Boolean emailExists(String email);
+
+  void save(Employee employee);
 }
