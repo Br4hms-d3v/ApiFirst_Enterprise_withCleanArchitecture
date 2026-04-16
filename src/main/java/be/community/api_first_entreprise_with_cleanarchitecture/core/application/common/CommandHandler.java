@@ -14,5 +14,5 @@ public interface CommandHandler<C, E> {
    * @param command the command
    * @return the result
    */
-  Result<E, ?> handle(C command);
+  Result<E, Result.Unit> handle(C command);
 }
