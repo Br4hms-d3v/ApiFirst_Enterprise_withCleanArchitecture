@@ -14,4 +14,6 @@ public interface EmployeeRepository {
   Boolean emailExists(String email);
 
   void save(Employee employee);
+
+  void deleteById(long id);
 }

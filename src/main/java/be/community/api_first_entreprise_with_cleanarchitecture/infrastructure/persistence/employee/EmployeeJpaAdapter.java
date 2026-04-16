@@ -41,4 +41,9 @@ public class EmployeeJpaAdapter implements EmployeeRepository {
   public void save(Employee employee) {
     jpaEmployeeRepository.save(employee);
   }
+
+  @Override
+  public void deleteById(long id) {
+    jpaEmployeeRepository.deleteById(id);
+  }
 }
