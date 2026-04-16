@@ -8,25 +8,25 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.domain.empl
 import org.springframework.stereotype.Service;
 
 @Service
-public class DeleteEmployeeCommandHandler implements CommandHandler<DeleteEmployeeCommand, EmployeeError> {
+public class DeleteEmployeeCommandHandler
+    implements CommandHandler<DeleteEmployeeCommand, EmployeeError> {
 
-    private final EmployeeRepository employeeRepository;
+  private final EmployeeRepository employeeRepository;
 
-    public DeleteEmployeeCommandHandler(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
+  public DeleteEmployeeCommandHandler(EmployeeRepository employeeRepository) {
+    this.employeeRepository = employeeRepository;
+  }
 
-    @Override
-    public Result<EmployeeError, Result.Unit> handle(DeleteEmployeeCommand command) {
-        return employeeRepository
-                .findById(command.id())
-                .<Result<EmployeeError, Result.Unit>>map(entity -> {
-                    employeeRepository.deleteById(command.id());
-                    return Result.success(Result.Unit.INSTANCE);
-                })
-                .orElseGet(() -> Result.failure(
-                                new EmployeeError.EmployeeNotFound("The employee is not found")
-                        )
-                );
-    }
+  @Override
+  public Result<EmployeeError, Result.Unit> handle(DeleteEmployeeCommand command) {
+    return employeeRepository
+        .findById(command.id())
+        .<Result<EmployeeError, Result.Unit>>map(
+            entity -> {
+              employeeRepository.deleteById(command.id());
+              return Result.success(Result.Unit.INSTANCE);
+            })
+        .orElseGet(
+            () -> Result.failure(new EmployeeError.EmployeeNotFound("The employee is not found")));
+  }
 }
