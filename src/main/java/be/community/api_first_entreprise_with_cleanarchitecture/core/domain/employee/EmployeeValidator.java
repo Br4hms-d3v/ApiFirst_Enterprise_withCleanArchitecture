@@ -4,6 +4,7 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.application
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.common.Result;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.common.validation.ValidationChain;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.CreateEmployeeCommand;
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.UpdateEmployeeCommand;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,6 +28,22 @@ public class EmployeeValidator {
         .validate(
             c -> hasAddress(c.address()),
             new EmployeeError.EmployeeCreationFailed("The employee must have an address"))
+        .toResult();
+  }
+
+  public Result<EmployeeError, UpdateEmployeeCommand> validateUpdate(
+      UpdateEmployeeCommand command) {
+    return ValidationChain.<UpdateEmployeeCommand, EmployeeError>of(command)
+        .validate(
+            c -> c.name() != null && !c.name().trim().isEmpty(),
+            new EmployeeError.EmployeeNameIsMissing("The name is missing"))
+        .validate(
+            c -> isLevelValid(c.floor()),
+            new EmployeeError.EmployeeInvalidLevel(
+                "The floor must be located between 0 and 6th floors"))
+        .validate(
+            c -> c.service() != null && !c.service().trim().isEmpty(),
+            new EmployeeError.EmployeeServiceMissing("The service is missing"))
         .toResult();
   }
 
