@@ -5,8 +5,10 @@ import be.community.api_first_entreprise_with_cleanarchitecture.core.application
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.common.dto.PagedResponseDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.CreateEmployeeCommand;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.DeleteEmployeeCommand;
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.UpdateEmployeeCommand;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.handler.CreateEmployeeCommandHandler;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.handler.DeleteEmployeeCommandHandler;
+import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.command.handler.UpdateEmployeeCommandHandler;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.dto.EmployeeDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.dto.EmployeeListDto;
 import be.community.api_first_entreprise_with_cleanarchitecture.core.application.employee.query.EmployeeListQuery;
@@ -22,6 +24,7 @@ import org.openapitools.api.EmployeeApi;
 import org.openapitools.model.CreateEmployeeRequest;
 import org.openapitools.model.EmployeeResponse;
 import org.openapitools.model.Employees;
+import org.openapitools.model.UpdateEmployeeRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,18 +39,21 @@ public class EmployeeResource implements EmployeeApi {
 
   private final CreateEmployeeCommandHandler createEmployeeCommandHandler;
   private final DeleteEmployeeCommandHandler deleteEmployeeCommandHandler;
+  private final UpdateEmployeeCommandHandler updateEmployeeCommandHandler;
 
   public EmployeeResource(
       EmployeeQueryHandler employeeQueryHandler,
       EmployeeListQueryHandler employeeListQueryHandler,
       EmployeeSearchQueryHandler employeeSearchQueryHandler,
       CreateEmployeeCommandHandler createEmployeeCommandHandler,
-      DeleteEmployeeCommandHandler deleteEmployeeCommandHandler) {
+      DeleteEmployeeCommandHandler deleteEmployeeCommandHandler,
+      UpdateEmployeeCommandHandler updateEmployeeCommandHandler) {
     this.employeeQueryHandler = employeeQueryHandler;
     this.employeeListQueryHandler = employeeListQueryHandler;
     this.employeeSearchQueryHandler = employeeSearchQueryHandler;
     this.createEmployeeCommandHandler = createEmployeeCommandHandler;
     this.deleteEmployeeCommandHandler = deleteEmployeeCommandHandler;
+    this.updateEmployeeCommandHandler = updateEmployeeCommandHandler;
   }
 
   ///////////////////////// Query /////////////////////////
@@ -145,11 +151,32 @@ public class EmployeeResource implements EmployeeApi {
         this::handleEmployeeError, success -> new ResponseEntity<>(HttpStatus.CREATED));
   }
 
+  /**
+   * Delete an employee
+   *
+   * @param id the identifier (required)
+   * @return void
+   */
   public ResponseEntity<Void> deleteEmployeeById(Long id) {
     var result = deleteEmployeeCommandHandler.handle(new DeleteEmployeeCommand(id));
 
     return result.fold(
         this::handleEmployeeError, success -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
+  }
+
+  public ResponseEntity<Void> updateEmployeeId(
+      Long id, UpdateEmployeeRequest updateEmployeeRequest) {
+    UpdateEmployeeCommand command =
+        new UpdateEmployeeCommand(
+            updateEmployeeRequest.getId(),
+            updateEmployeeRequest.getName(),
+            updateEmployeeRequest.getFirstname(),
+            updateEmployeeRequest.getService(),
+            updateEmployeeRequest.getFloor());
+
+    var result = updateEmployeeCommandHandler.handle(command);
+
+    return result.fold(this::handleEmployeeError, success -> new ResponseEntity<>(HttpStatus.OK));
   }
 
   // This is a design patter for Error Employee
@@ -168,6 +195,8 @@ public class EmployeeResource implements EmployeeApi {
       case EmployeeError.EmployeeInvalidLevel(var message) ->
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
       case EmployeeError.EmployeeEmailNotValid(var message) ->
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+      case EmployeeError.EmployeeServiceMissing(var message) ->
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
       default -> {
         System.out.println("UNHANDLED ERROR: " + error.getClass());
