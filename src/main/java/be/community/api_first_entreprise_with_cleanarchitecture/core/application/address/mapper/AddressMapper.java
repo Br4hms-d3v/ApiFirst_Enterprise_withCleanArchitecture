@@ -24,7 +24,7 @@ public class AddressMapper {
 
     Address address = new Address();
     address.setStreet(dto.street());
-    address.setZipCcode(dto.zipCode());
+    address.setZipCode(dto.zipCode());
     address.setCity(dto.city());
 
     return address;

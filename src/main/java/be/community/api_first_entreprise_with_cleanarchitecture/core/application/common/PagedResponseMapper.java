@@ -18,7 +18,7 @@ public class PagedResponseMapper {
 
     return new PagedResponseDto<>(
         content,
-        page.getNumber(),
+        page.getNumber() + 1,
         page.getSize(),
         page.getTotalElements(),
         page.getTotalPages(),

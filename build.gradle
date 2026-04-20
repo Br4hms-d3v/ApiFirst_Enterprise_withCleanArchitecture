@@ -61,6 +61,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2' // H2 database in memory
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test' // Test dependence
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test' //  Test dependence
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Test dependence
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

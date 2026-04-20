@@ -53,7 +53,7 @@ public class CreateEmployeeCommandHandler
 
     newAddress.setStreet(command.address().street());
     newAddress.setCity(command.address().city());
-    newAddress.setZipCcode(command.address().zipCode());
+    newAddress.setZipCode(command.address().zipCode());
 
     employee.setName(command.name());
     employee.setFirstName(command.firstName());
